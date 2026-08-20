@@ -1,0 +1,21 @@
+{
+  "environment_id": "env-demo",
+  "resources": [
+    {
+      "name": "database",
+      "type": "postgres",
+      "desired_state": {
+        "engine": "16",
+        "storage_gb": 100
+      }
+    },
+    {
+      "name": "cache",
+      "type": "redis",
+      "desired_state": {
+        "memory_mb": 512
+      },
+      "depends_on": ["database"]
+    }
+  ]
+}
