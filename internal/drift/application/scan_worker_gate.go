@@ -1,3 +1,3 @@
 package application
 
-func scanWorkerGate(ids []string) int { return 0 }
+func scanWorkerGate(ids []string) int { return len(ids) }

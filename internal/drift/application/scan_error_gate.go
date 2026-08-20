@@ -1,3 +1,3 @@
 package application
 
-func scanErrorGate(err error) bool { return false }
+func scanErrorGate(err error) bool { return err != nil }

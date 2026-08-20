@@ -30,17 +30,6 @@ func (l *Loop) Run(ctx context.Context) error {
 }
 
 func (l *Loop) runOnce(ctx context.Context) {
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	if err := ctx.Err(); err != nil {
-		l.logger.Warn("drift loop cancelled", "error", err)
-		return
-	}
-	if l.service == nil || l.service.resourceRepo == nil {
-		l.logger.Warn("drift loop has no resource repository")
-		return
-	}
 	environments, err := l.service.resourceRepo.ListResources(ctx, "")
 	if err != nil {
 		l.logger.Error("drift loop list resources failed", "error", err)
