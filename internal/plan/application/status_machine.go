@@ -10,7 +10,7 @@ var validPlanTransitions = map[plandomain.Status]map[plandomain.Status]bool{
 	plandomain.StatusDraft:     {plandomain.StatusApproved: true, plandomain.StatusRejected: true},
 	plandomain.StatusApproved:  {plandomain.StatusExecuting: true, plandomain.StatusRejected: true},
 	plandomain.StatusExecuting: {plandomain.StatusCompleted: true, plandomain.StatusFailed: true},
-	plandomain.StatusFailed:    {},
+	plandomain.StatusFailed:    {plandomain.StatusExecuting: true},
 }
 
 func ValidatePlanTransition(from, to plandomain.Status) error {
