@@ -83,7 +83,19 @@ func (s *Service) GetResource(ctx context.Context, id string) (domain.Resource, 
 }
 
 func (s *Service) ListResources(ctx context.Context, environmentID string) ([]domain.Resource, error) {
-	return s.repo.ListResources(ctx, environmentID)
+	resources, err := s.repo.ListResources(ctx, environmentID)
+	if err != nil {
+		return nil, err
+	}
+	if resources == nil {
+		return []domain.Resource{}, nil
+	}
+	for i := range resources {
+		if resources[i].EnvironmentID == "" {
+			resources[i].EnvironmentID = environmentID
+		}
+	}
+	return FilterResources(resources, func(domain.Resource) bool { return true }), nil
 }
 
 func (s *Service) UpsertVariable(ctx context.Context, in domain.VariableInput) (domain.Variable, error) {
