@@ -29,14 +29,14 @@ func (s *Service) Decide(ctx context.Context, input domain.DecisionInput) (domai
 	if input.ID == "" || input.ApprovedBy == "" {
 		return domain.Request{}, fmt.Errorf("id and approved_by are required")
 	}
-	request, err := s.repo.Get(ctx, input.ID)
+	request, err := s.repo.Get(context.Background(), input.ID)
 	if err != nil {
 		return domain.Request{}, err
 	}
 	if request.Status != domain.StatusPending {
 		return domain.Request{}, fmt.Errorf("approval request is not pending")
 	}
-	return s.repo.Decide(ctx, input)
+	return s.repo.Decide(context.Background(), input)
 }
 
 func (s *Service) ForPlan(ctx context.Context, planID string) ([]domain.Request, error) {
@@ -44,7 +44,7 @@ func (s *Service) ForPlan(ctx context.Context, planID string) ([]domain.Request,
 }
 
 func (s *Service) EnsureApproved(ctx context.Context, planID string) error {
-	requests, err := s.repo.ListByPlan(ctx, planID)
+	requests, err := s.repo.ListByPlan(context.Background(), planID)
 	if err != nil {
 		return fmt.Errorf("list approvals: %w", err)
 	}

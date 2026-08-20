@@ -1,4 +1,4 @@
-# infrastructure-orchestration-control-service
+# infrastructure-orchestration-control-service__011
 
 ## 构建镜像
 
@@ -12,7 +12,7 @@
 
 ```bash
 go build ./...     # 编译
-# 未检测到 package main；该项目按库/测试项目处理
+go run ./cmd/server   # 启动
 go test ./...      # 测试（如有）
 ```
 

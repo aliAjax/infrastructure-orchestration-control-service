@@ -27,9 +27,6 @@ func NewPolicyEvaluator(environments []resourcedomain.Environment, resources []r
 }
 
 func (e *PolicyEvaluator) Evaluate(ctx context.Context, environmentID string, items []plandomain.DiffItem) (domain.Policy, error) {
-	if err := ctx.Err(); err != nil {
-		return domain.Policy{}, err
-	}
 	policy := domain.Policy{Production: e.productionByEnvironment[environmentID]}
 	for _, item := range items {
 		if item.Operation == plandomain.OperationDelete {
@@ -45,6 +42,7 @@ func (e *PolicyEvaluator) Evaluate(ctx context.Context, environmentID string, it
 }
 
 func ValidateApprovalState(ctx context.Context, policy domain.Policy, requests []domain.Request) error {
+	ctx = context.Background()
 	if !policy.RequiresApproval() {
 		return nil
 	}
