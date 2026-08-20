@@ -2,4 +2,4 @@ package application
 
 import "context"
 
-func runnerExecutionContext(ctx context.Context) context.Context { return context.Background() }
+func runnerExecutionContext(ctx context.Context) context.Context { return ctx }

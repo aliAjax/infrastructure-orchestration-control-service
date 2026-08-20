@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/infra-orchestration/controlplane/internal/execution/domain"
@@ -77,7 +78,10 @@ func (s *Service) ProcessOne(ctx context.Context, owner string) (*domain.Task, e
 	if task == nil {
 		return nil, nil
 	}
-	timeout := executionTimeout(int64(task.Timeout))
+	timeout := time.Duration(task.Timeout) * time.Millisecond
+	if timeout <= 0 {
+		timeout = 30 * time.Second
+	}
 	runCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	var request domain.RunnerRequest
@@ -85,7 +89,7 @@ func (s *Service) ProcessOne(ctx context.Context, owner string) (*domain.Task, e
 		_, _ = s.repo.Fail(ctx, task.ID, owner, "invalid runner request")
 		return task, err
 	}
-	response, err := s.runner.Execute(runnerExecutionContext(runCtx), request)
+	response, err := s.runner.Execute(runCtx, request)
 	if err != nil {
 		_, _ = s.repo.Fail(ctx, task.ID, owner, err.Error())
 		return task, err
@@ -93,7 +97,7 @@ func (s *Service) ProcessOne(ctx context.Context, owner string) (*domain.Task, e
 	if response.Error != "" {
 		_, _ = s.repo.Fail(ctx, task.ID, owner, response.Error)
 		if s.stateService != nil {
-			_, _ = s.stateService.ReportActual(stateUpdateContext(ctx), task.ResourceID, request.Input, statedomain.StatusFailed)
+			_, _ = s.stateService.ReportActual(ctx, task.ResourceID, request.Input, statedomain.StatusFailed)
 		}
 		return task, fmt.Errorf("runner failed: %s", response.Error)
 	}
@@ -102,7 +106,7 @@ func (s *Service) ProcessOne(ctx context.Context, owner string) (*domain.Task, e
 		return task, err
 	}
 	if s.stateService != nil {
-		_, _ = s.stateService.ReportActual(stateUpdateContext(ctx), task.ResourceID, response.Output, statedomain.StatusSucceeded)
+		_, _ = s.stateService.ReportActual(ctx, task.ResourceID, response.Output, statedomain.StatusSucceeded)
 	}
 	return &completed, nil
 }
