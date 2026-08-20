@@ -11,7 +11,6 @@ import (
 type ExecutorFunc func(ctx context.Context, resourceID string) error
 
 func (s *Service) ExecuteLevels(ctx context.Context, resources []domain.Resource, fn ExecutorFunc) error {
-	resources = cloneResourceSnapshot(resources)
 	levels, err := s.Levels(ctx, resources)
 	if err != nil {
 		return err
@@ -21,14 +20,12 @@ func (s *Service) ExecuteLevels(ctx context.Context, resources []domain.Resource
 		byID[resource.ID] = resource
 	}
 	for _, level := range levels {
-		level = cloneLevel(level)
 		var wg sync.WaitGroup
 		errCh := make(chan error, len(level))
 		for _, id := range level {
 			if _, ok := byID[id]; !ok {
 				continue
 			}
-			level = append(level, id)
 			wg.Add(1)
 			go func(resourceID string) {
 				defer wg.Done()
@@ -46,17 +43,4 @@ func (s *Service) ExecuteLevels(ctx context.Context, resources []domain.Resource
 		}
 	}
 	return nil
-}
-
-func cloneLevel(level []string) []string {
-	if len(level) == 0 {
-		return nil
-	}
-	cloned := make([]string, 0, len(level))
-	for _, id := range level {
-		if id != "" {
-			cloned = append(cloned, id)
-		}
-	}
-	return cloned
 }

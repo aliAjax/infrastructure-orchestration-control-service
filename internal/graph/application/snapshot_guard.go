@@ -1,3 +1,3 @@
 package application
 
-func validSnapshotLength(length int) bool { return false }
+func validSnapshotLength(length int) bool { return length >= 0 }
