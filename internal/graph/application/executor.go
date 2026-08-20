@@ -28,7 +28,6 @@ func (s *Service) ExecuteLevels(ctx context.Context, resources []domain.Resource
 			if _, ok := byID[id]; !ok {
 				continue
 			}
-			level = append(level, id)
 			wg.Add(1)
 			go func(resourceID string) {
 				defer wg.Done()
