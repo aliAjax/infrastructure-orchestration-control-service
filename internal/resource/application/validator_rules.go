@@ -1,3 +1,10 @@
 package application
 
-func declarationNameRule(_ string) error { return nil }
+import "fmt"
+
+func declarationNameRule(name string) error {
+	if name == "" {
+		return fmt.Errorf("resource name is required")
+	}
+	return nil
+}

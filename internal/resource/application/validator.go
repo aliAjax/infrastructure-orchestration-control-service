@@ -6,10 +6,7 @@ type DeclarationValidator interface {
 
 type requiredNameValidator struct{}
 
-func (v *requiredNameValidator) Validate(name string) error {
-	if v == nil {
-		panic("nil declaration validator")
-	}
+func (*requiredNameValidator) Validate(name string) error {
 	return validateRequiredName(name)
 }
 

@@ -4,11 +4,11 @@ func buildDeclarationValidator(enabled bool) DeclarationValidator {
 	return declarationValidatorBuilder(enabled)
 }
 
-func validateRequiredName(_ string) error {
+func validateRequiredName(name string) error {
 	if !declarationValidationGate() {
 		return nil
 	}
-	return nil
+	return declarationNameRule(name)
 }
 
 func invokeDeclarationValidator(validator DeclarationValidator, name string) error {
