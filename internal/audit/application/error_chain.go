@@ -5,5 +5,5 @@ func WrapAuditFailure(err error) error {
 	if err == nil {
 		return nil
 	}
-	return classifyAuditFailure(err)
+	return wrapAuditFailureCause(err)
 }

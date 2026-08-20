@@ -1,3 +1,3 @@
 package application
 
-func preserveAuditCause() bool { return false }
+func preserveAuditCause() bool { return true }
