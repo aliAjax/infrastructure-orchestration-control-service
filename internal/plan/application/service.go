@@ -92,6 +92,19 @@ func (s *Service) List(ctx context.Context, environmentID string, limit int) ([]
 }
 
 func (s *Service) UpdateStatus(ctx context.Context, id string, status plandomain.Status) (plandomain.Plan, error) {
+	if id == "" {
+		return plandomain.Plan{}, fmt.Errorf("plan id is required")
+	}
+	if status == "" {
+		return plandomain.Plan{}, fmt.Errorf("plan status is required")
+	}
+	plan, err := s.repo.Get(ctx, id)
+	if err != nil {
+		return plandomain.Plan{}, err
+	}
+	if err := ValidatePlanTransition(plan.Status, status); err != nil {
+		return plandomain.Plan{}, err
+	}
 	return s.repo.UpdateStatus(ctx, id, status)
 }
 
