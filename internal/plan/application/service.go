@@ -102,7 +102,7 @@ func (s *Service) UpdateStatus(ctx context.Context, id string, status plandomain
 	if err != nil {
 		return plandomain.Plan{}, err
 	}
-	if err := ValidatePlanTransition(plan.Status, status); err != nil {
+	if err := validateStatusUpdate(plan.Status, status); err != nil {
 		return plandomain.Plan{}, err
 	}
 	return s.repo.UpdateStatus(ctx, id, status)
