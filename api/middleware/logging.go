@@ -23,10 +23,18 @@ func Logging(logger *slog.Logger, next http.Handler) http.Handler {
 
 type statusWriter struct {
 	http.ResponseWriter
-	status int
+	status  int
+	written bool
 }
 
 func (w *statusWriter) WriteHeader(code int) {
+	// Keep the first committed status stable. A later WriteHeader from a
+	// recovery or fallback path must not overwrite what the client already
+	// received, so the logged/metric status matches the real outcome.
+	if w.written {
+		return
+	}
+	w.written = true
 	w.status = code
 	w.ResponseWriter.WriteHeader(code)
 }
