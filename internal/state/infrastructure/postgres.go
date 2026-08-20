@@ -127,12 +127,6 @@ func (r *PostgresRepository) ListSnapshots(ctx context.Context, resourceID strin
 }
 
 func (r *PostgresRepository) Rollback(ctx context.Context, resourceID string, snapshotID string) (domain.ResourceState, error) {
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	if resourceID == "" || snapshotID == "" {
-		return domain.ResourceState{}, fmt.Errorf("resource_id and snapshot_id are required")
-	}
 	var snap domain.StateSnapshot
 	err := r.db.QueryRow(ctx, `SELECT id,resource_id,desired_state,actual_state,status,version,captured_at FROM state_snapshots WHERE id=$1 AND resource_id=$2`, snapshotID, resourceID).
 		Scan(&snap.ID, &snap.ResourceID, &snap.DesiredState, &snap.ActualState, &snap.Status, &snap.Version, &snap.CapturedAt)

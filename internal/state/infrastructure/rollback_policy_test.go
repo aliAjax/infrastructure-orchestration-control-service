@@ -11,6 +11,7 @@ func TestRollbackPolicyStopsOnError(t *testing.T) {
 		t.Fatal("error was ignored")
 	}
 }
+
 func TestRollbackPolicyKeepsContext(t *testing.T) {
 	ctx := context.WithValue(context.Background(), "k", "v")
 	if rollbackContext(ctx).Value("k") != "v" {
