@@ -11,11 +11,11 @@ func NewConfigLoader(load func(context.Context) error) *ConfigLoader {
 }
 
 func (l *ConfigLoader) Load(ctx context.Context) error {
-	if err := ctx.Err(); err != nil {
-		return err
-	}
 	if l == nil || l.load == nil {
 		return nil
 	}
-	return l.load(ctx)
+	if !configLoadAllowed(ctx) {
+		return ctx.Err()
+	}
+	return l.load(loaderContext(ctx))
 }

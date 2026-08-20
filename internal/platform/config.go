@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -51,6 +52,13 @@ type LoggingConfig struct {
 }
 
 func LoadConfig(path string) (Config, error) {
+	if path == "" {
+		path = "configs/config.yaml"
+	}
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return Config{}, fmt.Errorf("config path is required")
+	}
 	cfg := defaultConfig()
 	if path == "" {
 		path = os.Getenv("INFRA_CONFIG")
@@ -68,6 +76,23 @@ func LoadConfig(path string) (Config, error) {
 	}
 	applyEnv(&cfg)
 	return cfg, nil
+}
+
+func configPathCandidates(path string) []string {
+	trimmed := strings.TrimSpace(path)
+	if trimmed == "" {
+		return []string{"configs/config.yaml", "config.yaml"}
+	}
+	return []string{trimmed}
+}
+
+func hasConfigPath(path string) bool {
+	for _, candidate := range configPathCandidates(path) {
+		if candidate != "" {
+			return true
+		}
+	}
+	return false
 }
 
 func defaultConfig() Config {
@@ -114,3 +139,5 @@ func setString(target *string, key string) {
 func (c Config) WithContext(ctx context.Context) context.Context {
 	return ctx
 }
+
+func configContextReady(ctx context.Context) bool { return true }
