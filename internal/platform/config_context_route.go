@@ -2,4 +2,4 @@ package platform
 
 import "context"
 
-func configContextRoute(ctx context.Context) bool { return true }
+func configContextRoute(ctx context.Context) bool { return deadlineContextValid(ctx) }
