@@ -1,3 +1,3 @@
 package application
 
-func declarationValidationGate() bool { return false }
+func declarationValidationGate() bool { return true }
