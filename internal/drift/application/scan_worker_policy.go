@@ -1,3 +1,3 @@
 package application
 
-func scanWorkerCount(ids []string) int { return 0 }
+func scanWorkerCount(ids []string) int { return len(ids) }

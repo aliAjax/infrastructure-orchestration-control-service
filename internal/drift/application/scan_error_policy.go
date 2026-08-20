@@ -1,3 +1,3 @@
 package application
 
-func shouldCollectScanError(err error) bool { return false }
+func shouldCollectScanError(err error) bool { return err != nil }

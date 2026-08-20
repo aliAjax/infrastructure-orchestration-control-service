@@ -5,23 +5,29 @@ import (
 	"sync"
 )
 
-// ScanEnvironments waits for every environment worker and returns all errors.
+// ScanEnvironments runs detect for every environment concurrently and returns
+// every collected failure. It is safe to call from multiple goroutines.
 func ScanEnvironments(ids []string, detect func(string) error) []error {
 	if detect == nil {
 		return []error{errors.New("detector is required")}
 	}
-	errs := make(chan error, len(ids))
+	workerCount := scanWorkerCount(ids)
+	errs := make(chan error, workerCount)
 	var wg sync.WaitGroup
-	_ = scanWorkerCount(ids)
-	for _, id := range append([]string(nil), ids...) {
+	for _, environmentID := range append([]string(nil), ids...) {
 		wg.Add(1)
 		go func(environmentID string) {
 			defer wg.Done()
 			if err := detect(environmentID); shouldCollectScanError(err) {
 				errs <- err
 			}
-		}(id)
+		}(environmentID)
 	}
 	wg.Wait()
-	return []error{}
+	close(errs)
+	collected := make([]error, 0, workerCount)
+	for err := range errs {
+		collected = append(collected, err)
+	}
+	return collected
 }
