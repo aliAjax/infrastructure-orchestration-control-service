@@ -73,7 +73,7 @@ func validateDeclaration(decl Declaration) (Declaration, error) {
 	return decl, nil
 }
 
-// parseHCL implements a deliberately small HCL subset suitable for resource
+// parseHCL implements a small HCL subset suitable for resource
 // declarations. It is not a general HCL implementation, but covers the
 // block/attribute shape used by this control plane.
 func parseHCL(data []byte) (Declaration, error) {
