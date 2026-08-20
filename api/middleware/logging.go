@@ -23,10 +23,15 @@ func Logging(logger *slog.Logger, next http.Handler) http.Handler {
 
 type statusWriter struct {
 	http.ResponseWriter
-	status int
+	status  int
+	written bool
 }
 
 func (w *statusWriter) WriteHeader(code int) {
+	if w.written {
+		return
+	}
+	w.written = true
 	w.status = code
 	w.ResponseWriter.WriteHeader(code)
 }

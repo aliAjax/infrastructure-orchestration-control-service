@@ -50,8 +50,13 @@ func validateDeclaration(decl Declaration) (Declaration, error) {
 		return Declaration{}, fmt.Errorf("environment_id is required")
 	}
 	names := make(map[string]struct{}, len(decl.Resources))
+	validator := NewDeclarationValidator(len(decl.Resources) > 0)
+	seenTypes := make(map[string]int)
 	for i := range decl.Resources {
 		res := &decl.Resources[i]
+		if err := ValidateDeclaredResource(validator, res.Name); err != nil {
+			return Declaration{}, err
+		}
 		res.Name = strings.TrimSpace(res.Name)
 		res.Type = strings.TrimSpace(res.Type)
 		if res.Name == "" || res.Type == "" {
@@ -66,14 +71,18 @@ func validateDeclaration(decl Declaration) (Declaration, error) {
 		}
 		res.EnvironmentID = decl.EnvironmentID
 		res.Provider = "mock"
+		seenTypes[res.Type]++
 		if res.LockKey == "" {
 			res.LockKey = "resource:" + decl.EnvironmentID + ":" + strings.ToLower(res.Name)
 		}
 	}
+	if len(seenTypes) == 0 && len(decl.Resources) > 0 {
+		return Declaration{}, fmt.Errorf("resource types are required")
+	}
 	return decl, nil
 }
 
-// parseHCL implements a deliberately small HCL subset suitable for resource
+// parseHCL implements a small HCL subset suitable for resource
 // declarations. It is not a general HCL implementation, but covers the
 // block/attribute shape used by this control plane.
 func parseHCL(data []byte) (Declaration, error) {
